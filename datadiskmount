@@ -1,4 +1,35 @@
-#!bin/bash
+#!/bin/bash
 lsblk
-echo "please enter the device full path: "
+echo "please enter the device full path (e.g /dev/sdb): "
 read newdev
+echo "Please enter the vgname : "
+read vgnm
+echo "Please enter the lvname : "
+read lvnm
+pvcreate "$newdev"
+vgcreate "$vgnm" "$newdev"
+pesize=$(pvdisplay | grep Total | tr -s " " | cut -d " " -f4)   
+lvcreate -l "$pesize" -n "$lvnm" "$vgnm"
+mkfs.ext4 /dev/"$vgnm"/"$lvnm"
+echo " "
+echo -e "========== Here is the result for lvdisplay ========== \n"
+lvdisplay
+echo -e "\n\n"
+echo -e "========== Here is the result for vgdisplay ========== \n"
+vgdisplay
+echo -e "\n\n"
+echo -e "========== Here is the result for pvdisplay ========== \n"
+pvdisplay
+echo -e "\n ========================= FINISH ========================="
+echo "Please enter the mount point path (e.g /vgname/lvname): "
+read mntpnt
+echo "We are adding the mount point to the provided path"
+echo "/dev/mapper/$vgnm-$lvnm      $mntpnt    ext4   defaults 0 0" >> /etc/fstab
+mount -a
+if [[ "$?" = "" ]]
+    then
+    echo "The mount point has been added"
+    cat /etc/fstab
+fi
+echo -e "Here is the mount details \n"
+df -h | tail -n 1
