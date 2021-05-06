@@ -1,1 +1,4 @@
-
+#!bin/bash
+lsblk
+echo "please enter the device full path: "
+read newdev
