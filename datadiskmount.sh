@@ -42,5 +42,5 @@ if [[ "$?" = "" ]]
     echo "The mount point has been added"
     cat /etc/fstab
 fi
-echo -e "Here is the mount details \n"
+echo -e "\nHere is the mount details \n"
 df -h | tail -n 1
